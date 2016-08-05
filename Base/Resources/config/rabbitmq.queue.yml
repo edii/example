@@ -1,0 +1,172 @@
+services:
+
+    araneum.base.rabbitmq.producer.base_producer:
+        class: Araneum\Base\Service\Factories\ProducerFactory
+
+    araneum.base.rabbitmq.producer.aweber:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.aweber_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "aweber.default"
+
+    araneum.base.rabbitmq.producer.transact:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.transact_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "transact.default"
+
+    araneum.base.rabbitmq.producer.axmail:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.axmail_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "axmail.default"
+
+    araneum.base.rabbitmq.producer.spot:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.spot_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "spot.default"
+
+    araneum.base.rabbitmq.producer.spot_lead:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.spot_lead_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "spot.lead"
+
+    araneum.base.rabbitmq.producer.spot_customer:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.spot_customer_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "spot.customer"
+
+    araneum.base.rabbitmq.producer.spot_login:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.spot_login_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "spot.login"
+
+    araneum.base.rabbitmq.producer.application_customer:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.application_customer_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "application.customer"
+
+    araneum.base.rabbitmq.producer.mails:
+        class: Araneum\Base\Service\RabbitMQ\ProducerService
+        factory: ["@araneum.base.rabbitmq.producer.base_producer", createService]
+        arguments:
+            - "@old_sound_rabbit_mq.mails_producer"
+            - "%rabbitmq_queue_expiration%"
+            - "%rabbitmq_message_time_iteration%"
+            - "mails.default"
+
+    araneum.base.rabbitmq.consumer.spot:
+        class: Araneum\Base\Service\RabbitMQ\SpotConsumerService
+        arguments:
+            - "@araneum.base.spot_api"
+            - "@araneum.base.rabbitmq.producer.spot"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+
+    araneum.base.rabbitmq.consumer.mails:
+        class: Araneum\Base\Service\RabbitMQ\MailsConsumerService
+        arguments:
+            - "@araneum.mail.mails_sender.service"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@serializer"
+            - "@doctrine.orm.entity_manager"
+
+    araneum.base.rabbitmq.consumer.spot_customer:
+        class: Araneum\Base\Service\RabbitMQ\SpotCustomerConsumerService
+        arguments:
+            - "@araneum.base.spot_api"
+            - "@araneum.base.rabbitmq.producer.spot_customer"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@doctrine.orm.entity_manager"
+            - "@event_dispatcher"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+
+    araneum.base.rabbitmq.consumer.spot_login:
+        class: Araneum\Base\Service\RabbitMQ\SpotCustomerLoginConsumerService
+        arguments:
+            - "@araneum.base.spot_api"
+            - "@araneum.base.rabbitmq.producer.spot_login"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@araneum.base.application_api"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+
+    araneum.base.rabbitmq.consumer.application_customer:
+        class: Araneum\Base\Service\RabbitMQ\ApplicationCustomerConsumerService
+        arguments:
+            - "@araneum.base.application_api"
+            - "@araneum.base.rabbitmq.producer.application_customer"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+
+    araneum.base.rabbitmq.consumer.aweber:
+        class: Araneum\Base\Service\RabbitMQ\AweberConsumerService
+        arguments:
+            - "@araneum.base.aweber_api"
+            - "@araneum.base.rabbitmq.producer.aweber"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+
+    araneum.base.rabbitmq.consumer.transact:
+        class: Araneum\Base\Service\RabbitMQ\TransactConsumerService
+        arguments:
+            - "@araneum.base.transact_api"
+            - "@araneum.base.rabbitmq.producer.transact"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+
+    araneum.base.rabbitmq.consumer.axmail:
+        class: Araneum\Base\Service\RabbitMQ\AxMailConsumerService
+        arguments:
+            - "@araneum.base.axmail_api"
+            - "@araneum.base.rabbitmq.producer.axmail"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+            - "@doctrine.orm.entity_manager"
+
+    araneum.base.rabbitmq.consumer.dead_messages:
+        class: Araneum\Base\Service\RabbitMQ\DeadMessagesConsumerService
+        arguments:
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@service_container"
+
+    araneum.base.rabbitmq.consumer.spot_lead:
+        class: Araneum\Base\Service\RabbitMQ\SpotLeadConsumerService
+        arguments:
+            - "@araneum.base.spot_api"
+            - "@araneum.base.rabbitmq.producer.spot_lead"
+            - "@araneum.base.rabbitmq.msg_convert_helper"
+            - "@doctrine.orm.entity_manager"
+            - "@event_dispatcher"
+            - "@old_sound_rabbit_mq.dead_messages_producer"
+            - "%enable_axMail_lead_after_registration%"

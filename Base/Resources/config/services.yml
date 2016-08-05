@@ -1,0 +1,75 @@
+services:
+    araneum.auth.entry_point:
+        class: Araneum\Base\Symfony\Security\AuthenticationEntryPoint
+
+    araneum.auth.success.handler:
+        class: Araneum\Base\Symfony\Security\AuthenticationSuccessHandler
+
+    araneum.auth.failure.handler:
+        class: Araneum\Base\Symfony\Security\AuthenticationFailureHandler
+        arguments:
+            - "@security.csrf.token_manager"
+
+    araneum.base.form.handler:
+        class: Araneum\Base\Service\FormHandlerService
+
+    araneum.command_runner.service:
+        class: Araneum\Base\Service\CommandRunnerService
+        arguments:
+            - "@kernel"
+
+    araneum.base.rabbitmq.msg_convert_helper:
+        class: Araneum\Base\Service\RabbitMQ\MessageConversionHelper
+
+    araneum.base.spot_api:
+        class: Araneum\Base\Service\ApiSenders\SpotApiSenderService
+        arguments:
+            - "@guzzle.client"
+            - "@doctrine.orm.entity_manager"
+            - "%spot_enable_json_responce%"
+            - "%spot_api_public_url_login%"
+
+    araneum.base.application_guzzle_client:
+        class: Guzzle\Service\Client
+        arguments:
+            - "baseUrl"
+            - {"request.options": {"auth": "%site_api%"}}
+
+    araneum.base.application_api:
+        class: Araneum\Base\Service\ApiSenders\ApplicationApiSenderService
+        arguments:
+            - "@araneum.base.application_guzzle_client"
+            - "@doctrine.orm.entity_manager"
+            - "%spot_enable_json_responce%"
+            - "%site_api_config%"
+
+    araneum.base.aweber_api:
+        class: Araneum\Base\Service\ApiSenders\AweberApiSenderService
+        arguments:
+            - "@guzzle.client"
+            - "@doctrine.orm.entity_manager"
+            - "%spot_enable_json_responce%"
+
+    araneum.base.transact_api:
+        class: Araneum\Base\Service\ApiSenders\TransactApiSenderService
+        arguments:
+            - "@guzzle.client"
+            - "@doctrine.orm.entity_manager"
+            - "%spot_enable_json_responce%"
+
+    araneum.base.axmail_api:
+        class: Araneum\Base\Service\ApiSenders\AxMailApiSenderService
+        arguments:
+            - "@guzzle.client"
+            - "@doctrine.orm.entity_manager"
+            - "%spot_enable_json_responce%"
+
+    araneum.base.form.type.entity_choice:
+        class: Araneum\Base\Forms\FormTypes\EntityChoiceType
+        arguments:
+            - "@doctrine"
+        tags:
+            - { name: form.type, alias: entityChoice }
+
+    araneum.base.validator.helper:
+        class: Araneum\Base\Service\ValidatorsHelperService
